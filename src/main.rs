@@ -1,16 +1,38 @@
-extern crate piston_window;
+extern crate tetra;
+use tetra::graphics::{self, Color, Text, Font, Vec2};
+use tetra::{State, Context, ContextBuilder};
 
-use piston_window::*;
+struct GameState {
+    text: Text,
+    position: Vec2,
+}
 
-fn main() {
-    let mut window: PistonWindow = WindowSettings::new("City Blocks", [640, 480])
-    .exit_on_esc(true).build().unwrap();
-    while let Some(e) = window.next() {
-        window.draw_2d(&e, |c, g| {
-            clear([0.0, 1.0, 1.0, 1.0], g);
-            rectangle([0.15, 0.69, 0.35, 1.0],
-                      [220.0, 0.0, 200.0, 100.0],
-                      c.transform, g);
-        });
+impl GameState {
+    fn new() -> GameState {
+        GameState {
+            text: Text::new("Hello, world!", Font::default(), 16.0),
+            position: Vec2::new(0.0, 0.0),
+        }
     }
+}
+
+impl State for GameState {
+    fn update(&mut self, ctx: &mut Context) -> tetra::Result {
+        self.position.x += 1.0;
+
+        Ok(())
+    }
+
+    fn draw(&mut self, ctx: &mut Context, _dt: f64) -> tetra::Result {
+        graphics::clear(ctx, Color::rgb(0.392, 0.584, 0.929));
+        graphics::draw(ctx, &self.text, self.position);
+
+        Ok(())
+    }
+}
+
+fn main() -> tetra::Result {
+    ContextBuilder::new("My First Tetra Game", 1280, 720)
+        .build()?
+        .run(&mut GameState::new())
 }

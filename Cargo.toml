@@ -4,4 +4,4 @@ version = "0.1.0"
 authors = ["yisonPylkita <yisonPylkita@gmail.com>"]
 
 [dependencies]
-piston_window="0.67.0"
+tetra = "0.2.12"
