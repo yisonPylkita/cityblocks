@@ -2,31 +2,36 @@ extern crate tetra;
 use tetra::graphics::{self, Color, Text, Font, Vec2};
 use tetra::{State, Context, ContextBuilder};
 
+use std::time::SystemTime;
+
 struct GameState {
     text: Text,
     position: Vec2,
+    last_frame_time: SystemTime,
 }
 
 impl GameState {
     fn new() -> GameState {
         GameState {
-            text: Text::new("Hello, world!", Font::default(), 16.0),
-            position: Vec2::new(0.0, 0.0),
+            text: Text::new("City Blocks (dev)", Font::default(), 16.0),
+            position: Vec2::new(10.0, 25.0),
+            last_frame_time: SystemTime::now(),
         }
     }
 }
 
 impl State for GameState {
     fn update(&mut self, ctx: &mut Context) -> tetra::Result {
-        self.position.x += 1.0;
-
         Ok(())
     }
 
     fn draw(&mut self, ctx: &mut Context, _dt: f64) -> tetra::Result {
-        graphics::clear(ctx, Color::rgb(0.392, 0.584, 0.929));
+        graphics::clear(ctx, Color::rgb(0., 0., 0.));
         graphics::draw(ctx, &self.text, self.position);
 
+        let time_now = SystemTime::now();
+        println!("Last frame was rendered {:?}ms ago", time_now.duration_since(self.last_frame_time).unwrap());
+        self.last_frame_time = time_now;
         Ok(())
     }
 }
