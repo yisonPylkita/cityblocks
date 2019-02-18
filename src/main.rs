@@ -1,38 +1,54 @@
 extern crate tetra;
-use tetra::graphics::{self, Color, Text, Font, Vec2};
+use tetra::graphics::{self, Color, Texture, Vec2};
 use tetra::{State, Context, ContextBuilder};
 
+use std::rc::Rc;
 
-// TODO: draw menu
-struct MenuState {
-    text: Text,
+struct Building {
+    texture: Rc<Texture>,
     position: Vec2,
 }
 
-impl MenuState {
-    fn new() -> MenuState {
-        MenuState {
-            text: Text::new("City Blocks (dev)", Font::default(), 16.0),
-            position: Vec2::new(10.0, 25.0),
-        }
+struct CityMapState {
+    buildings: Vec<Building>,
+}
+
+impl CityMapState {
+    fn new(ctx: &mut Context) -> tetra::Result<CityMapState> {
+        let empty_space_texture = Texture::new(ctx, "./assets/city_map/empty_space.png")?;
+        let mut buildings: Vec<Building> = Vec::new();
+        buildings.push(Building {
+            texture: empty_space_texture,
+            position: Vec2::new(0.0, 0.0),
+        });
+        buildings.push(Building {
+            texture: empty_space_texture,
+            position: Vec2::new(0.2, 0.2),
+        });
+
+        Ok(CityMapState {
+            buildings: buildings,
+        })
     }
 }
 
-impl State for MenuState {
+impl State for CityMapState {
     fn update(&mut self, ctx: &mut Context) -> tetra::Result {
         Ok(())
     }
 
     fn draw(&mut self, ctx: &mut Context, _dt: f64) -> tetra::Result {
-        graphics::clear(ctx, Color::rgb(0., 0., 0.));
-        graphics::draw(ctx, &self.text, self.position);
+        graphics::clear(ctx, Color::rgb(0.15, 0.25, 0.35));
+        for building in self.buildings.iter() {
+            graphics::draw(ctx, &building.texture, building.position);
+        }
 
         Ok(())
     }
 }
 
 fn main() -> tetra::Result {
-    ContextBuilder::new("My First Tetra Game", 1280, 720)
+    ContextBuilder::new("City Blocks - dev", 1280, 720)
         .build()?
-        .run(&mut MenuState::new())
+        .run_with(CityMapState::new)
 }
